@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Part Box</title>
+    <link rel="stylesheet" type="text/css" href="css/partStyle.css">
+
+
+</head>
+
+
+
+<body onload="urlCheck()">
+
+<div style="height: 60px">
+    <img src="images/cat_logo.svg" style="width: 62px; padding: 0 2%">
+    <img src="images/cart.svg" style="width: 25px; margin-top: 17px; margin-left: 12px; margin-right: 2%; float: right;">
+    <input onfocus="closeSplash()" id="search-box" style="outline: none; height: 25px; margin-top: 15px; font-size: 20px; margin-left: 2px; float: right;">
+    <img src="images/search.svg" style="width: 25px; margin-top: 17px; float: right;">
+</div>
+
+<div id="splash" class="splash">
+    <div style="position: absolute; display: inline-block; top: 50%; left: 50%; transform: translateY(-50%) translateX(-50%);">
+        <h1 style=" padding: 2px 38px; color: white; background-color: rgba(0,0,0, .5);border-radius: 6px; text-shadow: 2px 2px #262626;">Parts</h1>
+    </div>
+</div>
+
+<div style=" height: 200px; display: flex; overflow-x: scroll;">
+
+    <div onclick="categorySelect('Attachments')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/bucket.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Attachments</span>
+    </div>
+    <div onclick="categorySelect('Batteries')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/battery.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Batteries</span>
+    </div>
+    <div onclick="categorySelect('Drive Train')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/gear.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Drive Train</span>
+    </div>
+    <div onclick="categorySelect('Filters')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/filter.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Filters</span>
+    </div>
+    <div onclick="categorySelect('Fluids')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/oil.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Fluids</span>
+    </div>
+    <div onclick="categorySelect('Ground Engaging Tools')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/tip.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Ground Engaging</span>
+    </div>
+    <div onclick="categorySelect('Hardware And Fasteners')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/bolt.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Hardware And Fasteners</span>
+    </div>
+    <div onclick="categorySelect('Hose')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/hose.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Hose</span>
+    </div>
+    <div onclick="categorySelect('Hydraulics')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/hydro_pump.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Hydraulics</span>
+    </div>
+    <div onclick="categorySelect('Lights And Accessories')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/light.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Lights And Accessories</span>
+    </div>
+    <div onclick="categorySelect('O Ring Products')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/seal.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>O-Ring Products</span>
+    </div>
+    <div onclick="categorySelect('Pump Motors')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/defaultCAT.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Pump Motors</span>
+    </div>
+    <div onclick="categorySelect('Radios')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/radio.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Radios</span>
+    </div>
+    <div onclick="categorySelect('Seats')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/seat.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Seats</span>
+    </div>
+    <div onclick="categorySelect('Sensors')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/sensor.jpg') no-repeat center; background-size: cover;"></div>
+        <span>Sensors</span>
+    </div>
+    <div onclick="categorySelect('Tires')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/tire.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Tires</span>
+    </div>
+    <div onclick="categorySelect('Undercarriage')" class="category-container">
+        <div style="width: 100%; height: 134px; margin: 5px; background: url('images/parts/bushing.jpeg') no-repeat center; background-size: cover;"></div>
+        <span>Undercarriage</span>
+    </div>
+
+</div>
+
+<div style="width: 100%; text-align: center">
+    <h1 id="header" style="font-size: 50px; line-height: 1; font-weight: normal;letter-spacing: -1px;">Best Sellers</h1>
+</div>
+
+<div id="parts-container" style="display: flex; width: 100%; flex-wrap: wrap; align-items: center; justify-content: center;">
+    <div class="fit" onclick="partClicked(1234567)">
+        <div style="height: 300px;">
+            <img class="category-image" src="images/parts/grease.jpeg">
+        </div>
+    </div>
+
+</div>
+<div id="part-overview" style="display: none; position: relative; align-items: center; overflow:hidden;">
+    <button onclick="closePartOverview()" style="position: absolute; top:0; right: 0; font-size: 21px; color: dimgrey; cursor: pointer; border: none; outline: none">X</button>
+    <div id="overview-image" style=" height: 50vh;">
+        <img id="big-picture" class="category-image" onerror="sourceImageError(this)" src="images/parts/defaultCAT.jpeg">
+    </div>
+    <div id="overview-text" style=" overflow: auto; padding: 10px 15px">
+        <div style="height: 15%;">
+            <p style="display: inline">Available Quantity: <span id="quantity">64</span></p>
+            <div style="display: flex; padding: 6px 0 8px 0">
+                <input style="margin-top: 5px; height: 20px; outline: none; margin-right: 5px"><button class="btn-call-to-action">Add to Cart</button>
+            </div>
+        </div>
+        <p id="short-description">
+            18 Watts RMS x 4 Channels Radio
+        </p>
+        <br>
+        <p id="long-description">
+            Description:<br>Cat® Radios provide clear and reliable signal reception.<br><br>Attributes:<br>1) Phone control button for easy access<br>2)Multi-colored buttons<br>3)Built-in Quartz Alarm Clock<br>4)Large acrylic lens to protect the display<br><br>Application:<br>Cat Radios can be used in a variety of applications including weather band and FM/AM station reception.
+        </p>
+    </div>
+</div>
+
+
+<div></div>
+
+<script type="text/javascript">
+
+    // https://tc39.github.io/ecma262/#sec-array.prototype.find
+    if (!Array.prototype.find) {
+        Object.defineProperty(Array.prototype, 'find', {
+            value: function(predicate) {
+                // 1. Let O be ? ToObject(this value).
+                if (this == null) {
+                    throw new TypeError('"this" is null or not defined');
+                }
+
+                var o = Object(this);
+
+                // 2. Let len be ? ToLength(? Get(O, "length")).
+                var len = o.length >>> 0;
+
+                // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+                if (typeof predicate !== 'function') {
+                    throw new TypeError('predicate must be a function');
+                }
+
+                // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+                var thisArg = arguments[1];
+
+                // 5. Let k be 0.
+                var k = 0;
+
+                // 6. Repeat, while k < len
+                while (k < len) {
+                    // a. Let Pk be ! ToString(k).
+                    // b. Let kValue be ? Get(O, Pk).
+                    // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+                    // d. If testResult is true, return kValue.
+                    var kValue = o[k];
+                    if (predicate.call(thisArg, kValue, k, o)) {
+                        return kValue;
+                    }
+                    // e. Increase k by 1.
+                    k++;
+                }
+
+                // 7. Return undefined.
+                return undefined;
+            },
+            configurable: true,
+            writable: true
+        });
+    }
+
+    var header = document.getElementById('header');
+    var partsContainer = document.getElementById('parts-container');
+    var currentJSON = [{part_number:"1234567"}];
+    var oldHeader = "-";
+
+    categorySelect("Attachments");
+
+    function urlCheck()
+    {
+        var urlParameters = getSearchParameters();
+
+        if(urlParameters.category_name)
+        {
+            // console.log(urlParameters.category_name);
+            categorySelect(urlParameters.category_name);
+        }
+    }
+
+    function categorySelect(category)
+    {
+        header.innerText = category;
+        oldHeader = header.innerText;
+
+
+        updateParts("http://ryanberg.io/cat/search?category_name="+encodeURIComponent(category));
+    }
+
+    function updateParts(url)
+    {
+        getAjax(url, function(data, customURL)
+        {
+            data = JSON.parse(data);
+            currentJSON = data;
+            // console.log(currentJSON);
+
+            // partsContainer.style.visibility = 'hidden';
+            while (partsContainer.firstChild)
+            {
+                partsContainer.removeChild(partsContainer.firstChild);
+            }
+
+            if(data.length === 0)
+            {
+                partsContainer.insertAdjacentHTML('beforeend','<h3>No results found.</h3>');
+            }
+
+            for(var part in data)
+            {
+                if(!data[part].price)
+                    data[part].price = "";
+
+                partsContainer.insertAdjacentHTML('beforeend',
+                    '<div class="fit" onclick="partClicked(\''+data[part].part_number+'\')">'+
+                    '<div style="height: 300px;">'+
+                    '<img class="category-image" src="'+data[part].image_source+'">'+
+                    '</div>'+
+                    '<p style="font-weight: bold; height: 60px; overflow: hidden">'+data[part].name+'</p>'+
+                    '<p style="display: inline;">'+data[part].part_number+'</p><p style="display: inline; margin-left: 12px">'+data[part].price+'</p>'+
+                    '</div>')
+            }
+            // window.history.pushState ({},"", customURL);
+
+            // partsContainer.style.visibility = 'visible';
+
+            var partsContainerArray = document.getElementsByClassName('fit');
+
+            for(var i = 0; i < partsContainerArray.length; i++)
+            {
+                partsContainerArray[i].style.opacity = '1';
+            }
+            closePartOverview();
+        });
+    }
+
+    var textSearchTimeout;
+    document.getElementById("search-box").addEventListener("keyup", function ()
+    {
+        var searchBox = document.getElementById("search-box");
+        clearTimeout(textSearchTimeout);
+        textSearchTimeout = setTimeout(function()
+        {
+            var searchType;
+            var searchValue;
+
+            if(searchBox.value === "")
+            {
+                return;
+            }
+
+            if(/^\d/.test(searchBox.value))
+            {
+                searchType = "part_number";
+                searchValue = searchBox.value.replace("-", "");
+            }
+            else if(/^\D/.test(searchBox.value))
+            {
+                searchType = "name";
+                searchValue = searchBox.value;
+            }
+            // header.innerText = "Search Results";
+            oldHeader = "Search Results";
+
+            updateParts("http://ryanberg.io/cat/search?search_type="+searchType+"&search_text="+encodeURIComponent(searchValue));
+        }, 500);
+    });
+
+    function sourceImageError(element)
+    {
+        element.src='images/parts/defaultCAT.jpeg';
+    }
+
+    function partClicked(partNumber)
+    {
+        partsContainer.style.opacity = '0';
+        oldHeader = header.innerText;
+
+        var part = currentJSON.find(function(item)
+        {
+            return item.part_number === partNumber;
+        });
+
+        // console.log(part);
+
+        document.getElementById('quantity').innerText = part.total_quantity;
+        document.getElementById('big-picture').src = part.image_source;
+        document.getElementById('short-description').innerHTML = part.short_description;
+        document.getElementById('long-description').innerHTML = part.long_description;
+
+        header.innerText = part.name + " " + part.part_number;
+
+        document.getElementById('part-overview').style.display = 'flex';
+        partsContainer.style.display = 'none';
+
+    }
+    function closePartOverview()
+    {
+        document.getElementById('part-overview').style.display = 'none';
+        partsContainer.style.display = 'flex';
+        partsContainer.style.opacity = '1';
+        header.innerText = oldHeader;
+    }
+
+    function closeSplash()
+    {
+        document.getElementById('splash').style.height = '60px';
+    }
+
+    function getAjax(url, success)
+    {
+        var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+        xhr.open('GET', url);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState>3 && xhr.status==200)
+                success(xhr.responseText, url.replace("/search", ""));
+        };
+        xhr.send();
+        return xhr;
+    }
+
+    function getSearchParameters() {
+        var prmstr = window.location.search.substr(1);
+        return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
+    }
+
+    function transformToAssocArray( prmstr ) {
+        var params = {};
+        var prmarr = prmstr.split("&");
+        for ( var i = 0; i < prmarr.length; i++) {
+            var tmparr = prmarr[i].split("=");
+            params[tmparr[0]] = tmparr[1];
+        }
+        return params;
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chamber 1</title>
+</head>
+<body style="background-color: #00b8d6">
+<div style="width: 744px; height: 744px; margin: auto; background: no-repeat url('images/game_boy.png'); background-size: contain">
+    <canvas id="canvas" style="background-color: #70c8a0; position: relative; left: 130px; top: 118px" width=480 height=432>n</canvas>
+</div>
+</body>
+<script type="module">
+import AStarCanvas from './js/A_Star_Canvas.js';
+import {blockType} from './js/A_Star.js';
+
+let canvas = document.getElementById('canvas');
+let gridBlockSize = 16;
+
+let aStar = new AStarCanvas(canvas, canvas.width / gridBlockSize);
+
+let context = canvas.getContext('2d');
+
+function TileImage(image, width, height, isWalkable, shouldClipOver)
+{
+    this.image = image;
+    this.width = width;
+    this.gridWidth = this.width / gridBlockSize;
+    this.height = height;
+    this.gridHeight = height / gridBlockSize;
+
+    this.isWalkable = isWalkable || false;
+    this.shouldClipOver = shouldClipOver || false;
+}
+
+
+let tileSet =
+    {
+        pallet_town480x432_walkable: null,
+
+        house_pallet_bottom80x32: null,
+        house_pallet_top_80x40_clip_walkable: null,
+
+        house_prof_oak_bottom_112x32: null,
+        house_prof_oak_top_112x40_clip_walkable: null,
+
+        tree_top32x16_clip: null
+    };
+
+let imageSources = ['images/pallet_town480x432_walkable.png', 'images/Pokemon Tileset/Tiles/tree_top32x16_clip.png', 'images/Pokemon Tileset/Tiles/Buildings/house_pallet_bottom80x32.png', 'images/Pokemon Tileset/Tiles/Buildings/house_pallet_top_80x40_clip_walkable.png', 'images/Pokemon Tileset/Tiles/Buildings/house_prof_oak_bottom_112x32.png', 'images/Pokemon Tileset/Tiles/Buildings/house_prof_oak_top_112x40_clip_walkable.png'];
+
+loadImages(imageSources, main);
+
+function main()
+{
+    // context.drawImage(tileSet.pallet_town480x432_walkable.image, 0, 0);
+
+    drawBackground();
+    drawForeground();
+
+    aStar.nodeNetwork.grid[8][13].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[9][13].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[10][13].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[11][13].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[12][13].blockType(blockType.wall);
+
+    aStar.nodeNetwork.grid[8][16].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[16][9].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[7][9].blockType(blockType.wall);
+
+    aStar.nodeNetwork.grid[21][18].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[20][18].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[19][18].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[18][18].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[17][18].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[16][18].blockType(blockType.wall);
+
+    aStar.nodeNetwork.grid[10][21].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[10][20].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[10][19].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[11][19].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[12][19].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[13][21].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[13][20].blockType(blockType.wall);
+    aStar.nodeNetwork.grid[13][19].blockType(blockType.wall);
+
+}
+
+function drawForeground()
+{
+    context.drawImage(tileSet.house_pallet_top_80x40_clip_walkable.image, 128, 96);
+    context.drawImage(tileSet.house_pallet_top_80x40_clip_walkable.image, 272, 96);
+
+    context.drawImage(tileSet.tree_top32x16_clip.image, 80, 344);
+    context.drawImage(tileSet.tree_top32x16_clip.image, 112, 344);
+
+    context.drawImage(tileSet.tree_top32x16_clip.image, 336, 344);
+    context.drawImage(tileSet.tree_top32x16_clip.image, 368, 344);
+
+    context.drawImage(tileSet.house_prof_oak_top_112x40_clip_walkable.image, 256, 192);
+}
+
+function drawBackground()
+{
+
+    context.drawImage(tileSet.pallet_town480x432_walkable.image, 0, 0);
+
+
+    drawAndSetPath(tileSet.house_pallet_bottom80x32, 128, 136);
+    drawAndSetPath(tileSet.house_pallet_bottom80x32, 272, 136);
+
+    drawAndSetPath(tileSet.house_prof_oak_bottom_112x32, 256, 232);
+}
+
+function drawAndSetPath(tile, x, y)
+{
+    context.drawImage(tile.image, x, y);
+
+    if(!tile.isWalkable)
+    {
+        for(let i = 0; i < tile.gridHeight; i++)
+        {
+            for(let j = 0; j < tile.gridWidth; j++)
+            {
+                aStar.nodeNetwork.grid[Math.floor(x/gridBlockSize)+j][Math.floor(y/gridBlockSize)+i].blockType(blockType.wall);
+            }
+        }
+    }
+}
+
+function loadImages(imageSourcesArray, callback)
+{
+    let imagesFinished = 0;
+    for(let i = 0; i < imageSourcesArray.length; i++)
+    {
+        let image = new Image();
+        image.onload = function()
+        {
+            imageSourcesArray[i] = imageSourcesArray[i].match(/(\w|\.)+$/)[0].replace('.png', '');
+
+            let shouldClipOver = false;
+            if(imageSourcesArray[i].search('clip') > 0)
+                shouldClipOver = true;
+
+            let walkable = false;
+            if(imageSourcesArray[i].search('walkable') > 0)
+                walkable = true;
+
+            let dimensions = imageSourcesArray[i].match(/\d+x\d+/)[0];
+            let width = dimensions.match(/\d+x/)[0].replace('x','');
+            let height = dimensions.match(/x\d+/)[0].replace('x','');
+
+            tileSet[imageSourcesArray[i]] = new TileImage(image, width, height, walkable, shouldClipOver);
+
+            imagesFinished++;
+            if(imagesFinished === imageSourcesArray.length)
+                callback();
+        };
+        image.src = imageSourcesArray[i];
+    }
+}
+
+class Character
+{
+    constructor(height, width, image, spawnAt, scale)
+    {
+        this.height = height;
+        this.width = width;
+        this. scale = scale || 1;
+        this.location = spawnAt;
+        this.image = image;
+        this.animationCounter = 0;
+        this.isAnimating = false;
+        this.currentHeading = heading.SOUTH;
+    }
+
+    updateHeading(oldLocation, newLocation)
+    {
+        this.currentHeading = (Math.sign(newLocation.x - oldLocation.x) * 2) + (Math.sign(newLocation.y - oldLocation.y) * 3);
+    }
+
+    clear(context)
+    {
+        context.clearRect(this.location.x-gridBlockSize, this.location.y-gridBlockSize, this.width+16, this.height+16);
+    }
+
+    draw(context)
+    {
+        let spriteSheetVerticalOffset;
+
+        switch (this.currentHeading)
+        {
+            case heading.WEST:
+                spriteSheetVerticalOffset = this.height;
+                break;
+            case heading.EAST:
+                spriteSheetVerticalOffset = this.height * 2;
+                break;
+            case heading.NORTH:
+                spriteSheetVerticalOffset = this.height * 3;
+                break;
+            case heading.SOUTH_WEST:
+                spriteSheetVerticalOffset = this.height * 4;
+                break;
+            case heading.SOUTH_EAST:
+                spriteSheetVerticalOffset = this.height * 5;
+                break;
+            case heading.NORTH_WEST:
+                spriteSheetVerticalOffset = this.height * 6;
+                break;
+            case heading.NORTH_EAST:
+                spriteSheetVerticalOffset = this.height * 7;
+                break;
+            case heading.SOUTH:
+            default:
+                spriteSheetVerticalOffset = 0;
+                break;
+        }
+
+        if(this.isAnimating)
+        {
+            if(this.animationCounter + 2 > this.image.width / this.width)
+                this.animationCounter = -1;
+
+            this.animationCounter++;
+        }
+        else
+            this.animationCounter = 1;
+
+        context.drawImage(this.image, this.animationCounter * this.width, spriteSheetVerticalOffset, this.width, this.height, this.location.x, this.location.y, this.width * this.scale, this.height * this.scale);
+    }
+}
+
+//  Heading calculated using change in why and a constant for each axis
+//
+//  -5  -3  -1
+//  -2   X   2
+//   1   3   5
+
+const heading =
+    {
+        NORTH_WEST: -5,
+        NORTH: -3,
+        NORTH_EAST: -1,
+        EAST: 2,
+        SOUTH_EAST: 5,
+        SOUTH: 3,
+        SOUTH_WEST: 1,
+        WEST: -2
+    };
+
+let stepProgressIndex = 0;
+let maleHeroImage = new Image();
+maleHeroImage.onload = function()
+{
+    let maleHero = new Character(32, 32, maleHeroImage, {x: 288, y: 256}, .5);
+
+    let stepProgressInterval = 0;
+    setInterval( function()
+    {
+        maleHero.clear(context);
+        drawBackground();
+        maleHero.draw(context);
+        drawForeground();
+
+        aStar.path.start.previousLocation = {x: Math.floor(maleHero.location.x/gridBlockSize), y: Math.floor(maleHero.location.y/gridBlockSize)};
+
+        if(aStar.nodeNetwork.solutionPath.length > 0 && stepProgressIndex < aStar.nodeNetwork.solutionPath.length)
+        {
+            maleHero.isAnimating = true;
+            let oldLocation = Object.assign({}, maleHero.location);
+
+            maleHero.location.x += Math.sign(aStar.nodeNetwork.solutionPath[stepProgressIndex].x*gridBlockSize - maleHero.location.x) * gridBlockSize/4;
+            maleHero.location.y += Math.sign(aStar.nodeNetwork.solutionPath[stepProgressIndex].y*gridBlockSize - maleHero.location.y) * gridBlockSize/4;
+
+            maleHero.updateHeading(oldLocation, maleHero.location);
+
+            stepProgressInterval++;
+            if(stepProgressInterval > 3)
+            {
+                stepProgressInterval = 0;
+                stepProgressIndex++;
+            }
+        }
+        else
+        {
+            maleHero.isAnimating = false;
+        }
+
+
+    }, 100);
+};
+
+maleHeroImage.src = 'images/purple_hair.png';
+window.addEventListener('keyup', event =>
+{
+   if(event.keyCode === 82)
+       stepProgressIndex = 0;
+});
+canvas.addEventListener('mousemove', event =>
+{
+    let moveLocation = {x: Math.floor(event.layerX / aStar.nodeNetwork.nodeWidth), y: Math.floor(event.layerY / aStar.nodeNetwork.nodeWidth)};
+    // console.log(moveLocation);
+    // console.log(moveLocation.x*16, moveLocation.y*16);
+
+    if(aStar.nodeNetwork.grid[moveLocation.x][moveLocation.y].type !== blockType.wall)
+    {
+        aStar.path.end.previousLocation = moveLocation;
+    }
+});
+canvas.addEventListener('mousedown', event =>
+{
+    stepProgressIndex = 0;
+    aStar.run();
+});
+</script>
+</html>

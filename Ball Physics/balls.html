@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Red Balls</title>
+    <link rel="icon" href="images/ball.png">
+</head>
+<body style="margin:0; background-color: #303030; overflow: hidden">
+<canvas id="canvas" style="cursor: none">-</canvas>
+</body>
+<script>
+    class Ball
+    {
+        constructor(scale, initialPosition, initialTarget)
+        {
+            this.scale = scale || 1;
+            this.mass = scale * 5;
+            this.center = initialPosition || {x: canvas.width * Math.random(), y: canvas.height * Math.random()};
+            this.topLeft = {};
+            this.target = initialTarget || {x: canvas.width/2, y: canvas.height/2};
+            this.render();
+        }
+        clear()
+        {
+            context2D.clearRect(this.topLeft.x, this.topLeft.y, ballImage.width*this.scale, ballImage.height*this.scale);
+        }
+        render()
+        {
+                this.topLeft.x = this.center.x - (ballImage.width*this.scale)/2;
+                this.topLeft.y = this.center.y - (ballImage.height*this.scale)/2;
+                context2D.drawImage(ballImage, this.topLeft.x, this.topLeft.y, ballImage.width*this.scale, ballImage.height*this.scale);
+        }
+        applySpringForce(springStrength)
+        {
+            if(Math.abs(this.target.x - this.center.x) < 6 && Math.abs(this.target.y - this.center.y) < 6)
+                return null;
+            springStrength = springStrength || 1;
+            let distanceToTarget = Math.hypot(this.target.x - this.center.x, this.target.y - this.center.y);
+            let displacement = (((distanceToTarget * springStrength) / this.mass) / 1000) * deltaTime;
+            let heading = Math.atan2(this.target.y - this.center.y, this.target.x - this.center.x);
+            this.center.x += displacement * Math.cos(heading);
+            this.center.y += displacement * Math.sin(heading);
+        }
+        applyRepulsionForce(sisterBall, repulsionStrength)
+        {
+            if(Math.abs(sisterBall.center.x - this.center.x) < 6 && Math.abs(sisterBall.center.y - this.center.y) < 6)
+                return null;
+            repulsionStrength = repulsionStrength || 1;
+            let distanceToSister = Math.hypot(this.center.x - sisterBall.center.x, this.center.y - sisterBall.center.y);
+            let displacement = ((-(repulsionStrength * 10000 * (this.mass * sisterBall.mass) / distanceToSister) / this.mass) / 1000) * deltaTime;
+            let heading = Math.atan2(sisterBall.center.y - this.center.y, sisterBall.center.x - this.center.x);
+            this.center.x += displacement * Math.cos(heading);
+            this.center.y += displacement * Math.sin(heading);
+        }
+    }
+</script>
+<script>
+    let canvas = document.getElementById('canvas');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    window.onresize = function(){canvas.width = window.innerWidth; canvas.height = window.innerHeight;resetTarget()};
+    let context2D = canvas.getContext('2d');
+
+    canvas.addEventListener('mousemove', event =>
+    {
+        balls.small2.center = {x: event.clientX - canvas.getBoundingClientRect().left, y: event.clientY - canvas.getBoundingClientRect().top};
+    });
+
+
+    let additionalBallCounter = 0;
+    let alertHasNotShown = true;
+    window.addEventListener('keydown', event =>
+    {
+        switch (event.keyCode)
+        {
+            case 37:
+                if(balls.small2.scale > .03)
+                {
+                    balls.small2.clear();
+                    balls.small2.scale -= .025;
+                    balls.small2.mass = balls.small2.scale * 5;
+                }
+                break;
+            case 39:
+                if(balls.small2.scale < 2)
+                {
+                    balls.small2.scale += .025;
+                    balls.small2.mass = balls.small2.scale * 5;
+                }
+                break;
+            case 32:
+                additionalBallCounter++;
+                if(additionalBallCounter < 301)
+                    balls[additionalBallCounter] = new Ball(Math.random() * .35 + .075);
+                else if(alertHasNotShown)
+                {
+                    alertHasNotShown = false;
+                    alert("I think that's enough balls for now.");
+                    oldTime = Date.now()
+                }
+                break;
+        }
+    });
+    window.onfocus = function(){oldTime = Date.now()};
+
+    let balls = {
+        medium: null, small: null, small2: null, tiny: null, tiny2: null, tiny3: null
+    };
+
+    let ballImage = new Image();
+    ballImage.onload = initObjects; ballImage.src = 'images/ball.png';
+
+    function initObjects()
+    {
+        balls.medium = new Ball(.45);
+        balls.small = new Ball(.25);
+        balls.small2 = new Ball(.3, {x: -500, y: -500});
+        balls.tiny = new Ball(.1);
+        balls.tiny2 = new Ball(.15);
+        balls.tiny3 = new Ball(.075);
+        mainLoop();
+    }
+
+    let oldTime = Date.now();
+    let deltaTime = 0;
+    function mainLoop()
+    {
+        deltaTime = Date.now()-oldTime;
+        oldTime = Date.now();
+
+        clear();
+        applyPhysics();
+        render();
+
+
+        window.requestAnimationFrame(mainLoop);
+    }
+
+    function applyPhysics()
+    {
+        for(let ball in balls)
+        {
+            if(ball !== 'small2')
+            {
+                balls[ball].applySpringForce(2);
+                for(let sisterBall in balls)
+                {
+                    if(ball !== sisterBall)
+                        balls[ball].applyRepulsionForce(balls[sisterBall], 2);
+                }
+            }
+        }
+    }
+    function clear()
+    {
+        for(let ball in balls)
+        {
+            balls[ball].clear();
+        }
+    }
+    function render()
+    {
+        drawPlatform();
+        for(let ball in balls)
+        {
+            balls[ball].render();
+        }
+    }
+    function drawPlatform()
+    {
+        context2D.beginPath();
+        context2D.moveTo(canvas.width * (1.5/8), canvas.height * (2/3));
+        context2D.lineTo(0, canvas.height);
+        context2D.lineTo(canvas.width, canvas.height);
+        context2D.lineTo(canvas.width * (6.5/8), canvas.height * (2/3));
+        context2D.fill();
+    }
+    function resetTarget()
+    {
+        for(let ball in balls)
+        {
+            balls[ball].target = {x: canvas.width/2, y: canvas.height/2};
+        }
+    }
+</script>
+</html>
